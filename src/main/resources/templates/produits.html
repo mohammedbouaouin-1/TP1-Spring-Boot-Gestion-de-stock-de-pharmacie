@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Stock Pharmacie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #047857;
+            --primary-hover: #065f46;
+            --primary-bg: #ecfdf5;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --danger: #dc2626;
+            --danger-bg: #fef2f2;
+            --info: #0284c7;
+            --info-bg: #f0f9ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding-bottom: 50px;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            margin-bottom: 30px;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.3px;
+        }
+
+        .brand-sub {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .alert-success {
+            background-color: var(--primary-bg);
+            color: var(--primary);
+            border: 1px solid #a7f3d0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .toolbar {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .filters-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            color: var(--text);
+            background: var(--white);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: background-color 0.15s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f5f9;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-info {
+            background-color: var(--info-bg);
+            color: var(--info);
+        }
+
+        .btn-info:hover {
+            background-color: #e0f2fe;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #fee2e2;
+        }
+
+        .table-container {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #f8fafc;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 12px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: #fbfcfe;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-cat {
+            background-color: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .badge-tag {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            margin-right: 4px;
+            margin-bottom: 2px;
+        }
+
+        .price {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="navbar-content">
+        <div>
+            <div class="brand-name">Pharmacie Stock</div>
+            <div class="brand-sub">Gestion des produits et stocks</div>
+        </div>
+        <div>
+            <a th:href="@{/produits/nouveau}" class="btn btn-primary">+ Nouveau produit</a>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+
+    <div th:if="${successMessage}" class="alert-success" th:text="${successMessage}">
+        Operation effectuee avec succes.
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Total Produits</div>
+            <div class="stat-value" th:text="${produits.size()}">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Categories</div>
+            <div class="stat-value" th:text="${categories.size()}">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Fournisseurs</div>
+            <div class="stat-value" th:text="${fournisseurs.size()}">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Tags</div>
+            <div class="stat-value" th:text="${tags.size()}">0</div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <form th:action="@{/produits}" method="get" class="filters-form">
+            <input type="text" name="search" th:value="${searchTerm}" placeholder="Rechercher par nom..." class="form-control" style="width: 220px;">
+
+            <select name="categorieId" class="form-control" onchange="this.form.submit()">
+                <option value="">Toutes les categories</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.nom}"
+                        th:selected="${selectedCategorie == cat.id}">
+                </option>
+            </select>
+
+            <button type="submit" class="btn btn-secondary">Filtrer</button>
+            <a th:href="@{/produits}" class="btn btn-secondary" th:if="${searchTerm != null or selectedCategorie != null}">Reinitialiser</a>
+        </form>
+
+        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+            <span th:text="${produits.size()}">0</span> produit(s) enregistre(s)
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom & Description</th>
+                    <th>Categorie</th>
+                    <th>Prix</th>
+                    <th>Code Barre</th>
+                    <th>Expiration</th>
+                    <th>Fournisseur</th>
+                    <th>Tags</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${produits.empty}">
+                    <td colspan="9" style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        Aucun produit trouve.
+                    </td>
+                </tr>
+                <tr th:each="p : ${produits}">
+                    <td th:text="${p.id}" style="color: var(--text-secondary); font-weight: 500;">1</td>
+                    <td>
+                        <strong th:text="${p.nom}">Nom</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);" th:text="${p.description}">Description</div>
+                    </td>
+                    <td>
+                        <span th:if="${p.categorie != null}" th:text="${p.categorie.nom}" class="badge badge-cat">Categorie</span>
+                        <span th:unless="${p.categorie != null}" style="color: var(--text-secondary);">-</span>
+                    </td>
+                    <td>
+                        <span class="price" th:text="${#numbers.formatDecimal(p.prix, 1, 2) + ' DH'}">0.00 DH</span>
+                    </td>
+                    <td>
+                        <span style="font-family: monospace; font-size: 0.8rem;" th:text="${p.codeBarre}">CODE</span>
+                    </td>
+                    <td>
+                        <span th:text="${#temporals.format(p.dateExpiration, 'yyyy-MM-dd')}">2026-01-01</span>
+                    </td>
+                    <td>
+                        <span th:if="${p.fournisseur != null}" th:text="${p.fournisseur.nom}">Fournisseur</span>
+                        <span th:unless="${p.fournisseur != null}" style="color: var(--text-secondary);">-</span>
+                    </td>
+                    <td>
+                        <span th:each="t : ${p.tags}" th:text="${t.libelle}" class="badge badge-tag">Tag</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="actions-cell">
+                            <a th:href="@{'/produits/' + ${p.id}}" class="btn btn-sm btn-info">Details</a>
+                            <a th:href="@{'/produits/modifier/' + ${p.id}}" class="btn btn-sm btn-secondary">Modifier</a>
+                            <a th:href="@{'/produits/supprimer/' + ${p.id}}" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Confirmer la suppression de ce produit ?');">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Fiche produit - ' + ${produit.nom}">Fiche Produit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #047857;
+            --primary-hover: #065f46;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 30px 20px 60px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .col-2 {
+            grid-column: span 2;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .badge-tag {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            margin-right: 6px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            border-color: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+
+<main class="container">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title" th:text="${produit.nom}">Nom du Produit</h1>
+            <p style="color: var(--text-secondary); font-size: 0.85rem;" th:text="'Identifiant : #' + ${produit.id}">ID: #1</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a th:href="@{/produits}" class="btn btn-secondary">Retour a la liste</a>
+            <a th:href="@{'/produits/modifier/' + ${produit.id}}" class="btn btn-primary">Modifier</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Informations generales</div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;" th:text="${produit.description}">Description du produit.</p>
+
+        <div class="grid-2">
+            <div>
+                <div class="info-label">Prix unitaire</div>
+                <div class="info-value" style="font-weight: 600; font-size: 1.1rem;" th:text="${#numbers.formatDecimal(produit.prix, 1, 2) + ' DH'}">0.00 DH</div>
+            </div>
+
+            <div>
+                <div class="info-label">Code barre</div>
+                <div class="info-value" style="font-family: monospace;" th:text="${produit.codeBarre}">CODE</div>
+            </div>
+
+            <div>
+                <div class="info-label">Date d'expiration</div>
+                <div class="info-value" th:text="${#temporals.format(produit.dateExpiration, 'dd/MM/yyyy')}">01/01/2026</div>
+            </div>
+
+            <div>
+                <div class="info-label">Categorie</div>
+                <div class="info-value">
+                    <span th:if="${produit.categorie != null}" th:text="${produit.categorie.nom}" class="badge">Categorie</span>
+                    <span th:unless="${produit.categorie != null}" style="color: var(--text-secondary);">-</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="info-label">Fournisseur</div>
+                <div class="info-value" th:if="${produit.fournisseur != null}" th:text="${produit.fournisseur.nom + ' (' + produit.fournisseur.adresse + ')'}">Fournisseur</div>
+                <div class="info-value" th:unless="${produit.fournisseur != null}" style="color: var(--text-secondary);">-</div>
+            </div>
+
+            <div>
+                <div class="info-label">Tags</div>
+                <div class="info-value">
+                    <span th:each="t : ${produit.tags}" th:text="${t.libelle}" class="badge badge-tag">Tag</span>
+                    <span th:if="${produit.tags.empty}" style="color: var(--text-secondary);">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" th:if="${produit.detailProduit != null}">
+        <div class="card-header">Detail technique du produit</div>
+        <div class="grid-2">
+            <div>
+                <div class="info-label">Fabricant</div>
+                <div class="info-value" th:text="${produit.detailProduit.fabricant}">Fabricant</div>
+            </div>
+
+            <div>
+                <div class="info-label">Pays d'origine</div>
+                <div class="info-value" th:text="${produit.detailProduit.paysOrigine}">Pays</div>
+            </div>
+
+            <div>
+                <div class="info-label">Dosage</div>
+                <div class="info-value" th:text="${produit.detailProduit.dosage}">Dosage</div>
+            </div>
+
+            <div>
+                <div class="info-label">Composition</div>
+                <div class="info-value" th:text="${produit.detailProduit.composition}">Composition</div>
+            </div>
+
+            <div class="col-2">
+                <div class="info-label">Indications</div>
+                <div class="info-value" th:text="${produit.detailProduit.indications}">Indications</div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>
